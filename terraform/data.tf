@@ -1,0 +1,1 @@
+data "aws_caller_identity" "this" {} # To gather information on the current caller
