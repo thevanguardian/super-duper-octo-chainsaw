@@ -12,4 +12,6 @@ cd .. && \
 helm repo add jenkins https://charts.jenkins.io && \
 helm repo update && \
 kubectl create namespace jenkins
-helm install jenkins/jenkins --generate-name -n jenkins -f jenkins/values.yaml
+helm install jenkins/jenkins -n jenkins -f jenkins/values.yaml
+
+cluster_endpoint=$(kubectl get svc --namespace jenkins jenkins --template "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}")

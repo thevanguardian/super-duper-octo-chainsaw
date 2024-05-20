@@ -1,7 +1,7 @@
-ingress:
-  enabled: true
+# ingress:
+#   enabled: true
 #   host:
-#     name: "jenkins.epic-geek.net"
+#      name: "jenkins.localhost"
 
 servicePort: 8080
 targetPort: 8080
@@ -13,11 +13,7 @@ controller:
   admin:
     password: admin
     username: admin
-  resources:
-    limits:
-      cpu: "200m"
-      memory: "2056Mi"
-
+  
   JCasC:
     defaultConfig: true
     configScripts:
@@ -26,4 +22,4 @@ controller:
           systemMessage: Welcome to Kube-Jenkins!
 
   # # LOCAL ONLY:
-  # serviceType: LoadBalancer
+  serviceType: LoadBalancer
