@@ -60,8 +60,30 @@ module "eks" {
       most_recent = true
     }
   }
+  # # Cluster access entry - Moved to manual entries outside of module, just for fun.
+  # # To add the current caller identity as an administrator
+  # enable_cluster_creator_admin_permissions = true
+
+  # access_entries = {
+  #   # One access entry with a policy associated
+  #   admin = {
+  #     kubernetes_groups = []
+  #     principal_arn     = data.aws_caller_identity.this.arn
+
+  #     policy_associations = {
+  #       admin = {
+  #         policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+  #         access_scope = {
+  #           namespaces = ["default"]
+  #           type       = "cluster"
+  #         }
+  #       }
+  #     }
+  #   }
+  # }
+
   eks_managed_node_group_defaults = {
-    instance_types = ["t3.micro"]
+    instance_types = ["t3.medium"]
     ami_type       = "AL2_x86_64"
     disk_size      = 20
   }
@@ -69,9 +91,9 @@ module "eks" {
     default = {
       min_size     = 1
       max_size     = 3
-      desired_size = 2
+      desired_size = 1
 
-      instance_types = ["t3.micro"]
+      instance_types = ["t3.medium"]
       capacity_type  = "SPOT"
     }
   }

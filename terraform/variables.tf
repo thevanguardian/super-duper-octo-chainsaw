@@ -9,5 +9,5 @@ variable "app_name" {
 variable "region" {
   type = string
   description = "AWS Region to deploy var.app_name into."
-  default = "us-west-2"
+  default = "us-east-2"
 }
