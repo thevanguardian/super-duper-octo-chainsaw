@@ -1,0 +1,84 @@
+ingress:
+  enabled: false
+
+servicePort: 8080
+targetPort: 8080
+
+persistence:
+  enabled: false
+
+serviceAccount:
+  annotations: 
+    eks.amazonaws.com/role-arn: arn:aws:iam::909307856304:role/k8s-testing
+agent:
+  podRetention: Always
+
+controller:
+  serviceType: LoadBalancer
+
+  serviceAnnotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-name: a4438c17479c04fc5af7062ddd7b68ff
+
+  additionalPlugins:
+    - job-dsl:1.77
+    - permissive-script-security:0.7
+    - pipeline-aws:1.45
+
+  javaOpts: '-Dpermissive-script-security.enabled=true'
+  admin:
+    password: admin
+    username: admin
+  
+  JCasC:
+    defaultConfig: true
+    configScripts:
+      welcome-message: |
+        jenkins:
+          systemMessage: Welcome to Kube-Jenkins!
+      job-config: |
+        jobs:
+          - script: >
+              folder('peewees playhouse')
+          - script: >
+              pipelineJob('peewees playhouse/weather') {
+                definition {
+                  cps {
+                    script("""\
+                      pipeline {
+                        agent {
+                          kubernetes {
+                            yaml '''
+                            apiVersion: v1
+                            kind: Pod
+                            metadata:
+                              labels:
+                                purpose: jenkins-agent
+                            spec:
+                              containers:
+                              - name: weather
+                                image: thevanguardian/weather:latest
+                                imagePullPolicy: Always
+                                command:
+                                - cat
+                                tty: true'''
+                          }
+                        }
+                        environment {
+                          AWS_ROLE_ARN = "arn:aws:iam::909307856304:role/k8s-testing"
+                        }
+                        stages {
+                          stage('Push De Button') {
+                            steps {
+                              container('weather') {
+                                sh 'aws eks update-kubeconfig --region us-east-2 --name container-sorcerer-dev'
+                                sh 'kubectl apply -f /app/deployment.yaml'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    """.stripIndent())
+                  }
+                }
+              }

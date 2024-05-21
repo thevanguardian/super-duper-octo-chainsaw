@@ -1,0 +1,52 @@
+controller:
+  replicaCount: 1
+  image:
+    repository: registry.k8s.io/ingress-nginx/controller
+    tag: "v1.1.1"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443
+
+defaultBackend:
+  enabled: true
+  image:
+    repository: registry.k8s.io/ingress-nginx/default-backend
+    tag: "v1.14.0"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 20Mi
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+    - host: weather.epic-geek.net
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: weather
+              port:
+                number: 80
+    - host: jenkins.epic-geek.net
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: jenkins
+              port:
+                number: 8080
