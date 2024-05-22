@@ -8,6 +8,9 @@ kind: Service
 metadata:
   name: weather
   namespace: weather
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-name: k8s-testing
 spec:
   ports:
   - port: 80

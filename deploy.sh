@@ -14,8 +14,33 @@ cd .. && \
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml && \
 kubectl apply -f k8s/external-dns.yaml
 
+# Setup the AWS Load Balancer Controller
+# curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.7.2/docs/install/iam_policy.json && \
+# aws iam create-policy \
+#     --policy-name AWSLoadBalancerControllerIAMPolicy \
+#     --policy-document file://iam_policy.json
+# eksctl create iamserviceaccount \
+#   --cluster=container-sorcerer-dev \
+#   --namespace=kube-system \
+#   --name=aws-load-balancer-controller \
+#   --role-name AmazonEKSLoadBalancerControllerRole \
+#   --attach-policy-arn=arn:aws:iam::909307856304:policy/AWSLoadBalancerControllerIAMPolicy \
+#   --approve
+# helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+#   -n kube-system \
+#   --set clusterName=container-sorcerer-dev \ 
+#   --set serviceAccount.create=false \
+#   --set serviceAccount.name=aws-load-balancer-controller
+
+
 # deploy jenkins via helm
 helm repo add jenkins https://charts.jenkins.io && \
 helm repo update && \
 helm upgrade --install jenkins jenkins/jenkins --create-namespace -n jenkins -f k8s/jenkins.yaml
 
+# Delay to allow Jenkins to start up
+while [ "$(curl -s -o /dev/null -w "%{http_code}" http://jenkins.epic-geek.net:8080)" != 403 ]; do
+  sleep 5
+done
+
+echo "Jenkins is ready!"

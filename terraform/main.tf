@@ -115,3 +115,14 @@ resource "aws_eks_access_policy_association" "this" {
     type = "cluster"
   }
 }
+
+resource "aws_eks_access_policy_association" "jenkins" {
+  for_each = toset(["AmazonEKSAdminPolicy", "AmazonEKSClusterAdminPolicy"])
+  cluster_name = module.eks.cluster_name
+  policy_arn = "arn:aws:eks::aws:cluster-access-policy/${each.value}"
+  principal_arn = "arn:aws:iam::909307856304:role/k8s-testing"
+
+  access_scope {
+    type = "cluster"
+  }
+}
