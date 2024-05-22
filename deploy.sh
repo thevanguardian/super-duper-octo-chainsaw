@@ -40,6 +40,7 @@ helm upgrade --install jenkins jenkins/jenkins --create-namespace -n jenkins -f 
 
 # Delay to allow Jenkins to start up
 while [ "$(curl -s -o /dev/null -w "%{http_code}" http://jenkins.epic-geek.net:8080)" != 403 ]; do
+  echo "Zzzzz...."
   sleep 5
 done
 
